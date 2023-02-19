@@ -1,7 +1,7 @@
-import UserModel from "../model/User.model.js";
-import bcrypt from 'bcrypt' ;
-import ENV from '../config.js';
+import UserModel from '../model/User.model.js'
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import ENV from '../config.js'
 import otpGenerator from 'otp-generator';
 
 /** middleware for verify user */
@@ -36,7 +36,8 @@ export async function verifyUser(req, res, next){
 export async function register(req,res){
 
     try {
-        const { username, password, profile, email } = req.body;        
+        const { username, password, profile, email,accountType } = req.body;  
+              
 
         // check the existing user
         const existUsername = new Promise((resolve, reject) => {
@@ -69,7 +70,8 @@ export async function register(req,res){
                                 username,
                                 password: hashedPassword,
                                 profile: profile || '',
-                                email
+                                email,
+                                accountType
                             });
 
                             // return save result as a response
@@ -93,6 +95,7 @@ export async function register(req,res){
     }
 
 }
+
 
 /** POST: http://localhost:8080/api/login 
  * @param: {
@@ -140,9 +143,9 @@ export async function login(req,res){
 }
 
 
-
 /** GET: http://localhost:8080/api/user/example123 */
 export async function getUser(req,res){
+    
     const { username } = req.params;
 
     try {
@@ -167,7 +170,6 @@ export async function getUser(req,res){
 }
 
 
-
 /** PUT: http://localhost:8080/api/updateuser 
  * @param: {
   "header" : "<token>"
@@ -181,7 +183,7 @@ body: {
 export async function updateUser(req,res){
     try {
         
-        //const id = req.query.id;
+        // const id = req.query.id;
         const { userId } = req.user;
 
         if(userId){
@@ -203,11 +205,13 @@ export async function updateUser(req,res){
     }
 }
 
+
 /** GET: http://localhost:8080/api/generateOTP */
 export async function generateOTP(req,res){
     req.app.locals.OTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false})
     res.status(201).send({ code: req.app.locals.OTP })
 }
+
 
 /** GET: http://localhost:8080/api/verifyOTP */
 export async function verifyOTP(req,res){
@@ -220,14 +224,16 @@ export async function verifyOTP(req,res){
     return res.status(400).send({ error: "Invalid OTP"});
 }
 
+
 // successfully redirect user when OTP is valid
 /** GET: http://localhost:8080/api/createResetSession */
 export async function createResetSession(req,res){
-    if(req.app.locals.resetSession){
+   if(req.app.locals.resetSession){
         return res.status(201).send({ flag : req.app.locals.resetSession})
    }
    return res.status(440).send({error : "Session expired!"})
 }
+
 
 // update the password when we have valid session
 /** PUT: http://localhost:8080/api/resetPassword */
@@ -270,11 +276,3 @@ export async function resetPassword(req,res){
     }
 }
 
-
-export function localVariables(req,res,next){
-    req.app.locals = {
-        OTP: null,
-        resetSession: false
-    }
-    next()
-}

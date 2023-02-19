@@ -34,47 +34,52 @@ export default function Password() {
       loginPromise.then(res => {
         let { token } = res.data;
         localStorage.setItem('token', token);
-        navigate('/profile')
+        if (apiData?.accountType === "recruteur") {
+          navigate("/dashboard");
+        } else if (apiData?.accountType === "candidat") {
+          navigate("/profile");
+        }
       })
+      
     }
   })
 
-  if(isLoading) return <h1 className='text-2xl font-bold'>isLoading</h1>;
+  if(isLoading) return <h1 className='text-2xl text-center font-bold'>isLoading</h1>;
   if(serverError) return <h1 className='text-xl text-red-500'>{serverError.message}</h1>
 
   return (
-    <div className="container mx-auto flex justify-center">
-
+    <section className=" container mx-auto flex justify-center mt-9">
       <Toaster position='top-center' reverseOrder={false}></Toaster>
-
-      <div className='flex justify-center items-center h-screen'>
-        <div className={styles.glass}>
-
-          <div className="title flex flex-col items-center">
-            <h4 className='text-5xl font-bold'>Hello {apiData?.firstName || apiData?.username}</h4>
-            <span className='py-4 text-xl w-2/3 text-center text-gray-500'>
-              Explore More by connecting with us.
-            </span>
+  <div className=" flex justify-center items-center  bg-white rounded-xl mt-16">
+    <div
+      className="flex xl:justify-center lg:justify-between justify-center items-center flex-wrap h-full g-6"
+    >
+      <div
+        className="grow-0 shrink-1 md:shrink-0 basis-auto xl:w-5/12 lg:w-5/12 md:w-8/12 mb-12 md:mb-0"
+      >
+        <img
+          src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+          className="w-full"
+          alt="Sample image"
+        />
+      </div>
+      <div className="xl:ml-20 xl:w-6/12 lg:w-6/12 md:w-9/12 mb-12 md:mb-8 mt-12 ">
+        <form onSubmit={formik.handleSubmit}>
+          <div className="flex flex-row items-center justify-center mb-4 mt-5">
+            <p className=" text-3xl font-bold">Hello {apiData?.firstName || apiData?.username}</p>
+           
           </div>
-
-          <form className='py-1' onSubmit={formik.handleSubmit}>
-              <div className='profile flex justify-center py-4'>
-                  <img src={apiData?.profile || avatar} className={styles.profile_img} alt="avatar" />
-              </div>
-
-              <div className="textbox flex flex-col items-center gap-6">
-                  <input {...formik.getFieldProps('password')} className={styles.textbox} type="text" placeholder='Password' />
+          <div className="textbox flex flex-col items-center gap-6">
+                  <input {...formik.getFieldProps('password')} className="border-4 border-gray-100 px-5 py-4 rounded-xl w-3/4 shadow-sm text-lg hover:border-gray-200 focus:outline-none" type="text" placeholder='Password' />
                   <button className={styles.btn} type='submit'>Sign In</button>
-              </div>
-
-              <div className="text-center py-4">
+          </div>
+          <div className="text-center py-4">
                 <span className='text-gray-500'>Forgot Password? <Link className='text-red-500' to="/recovery">Recover Now</Link></span>
-              </div>
-
-          </form>
-
-        </div>
+           </div>
+        </form>
       </div>
     </div>
+  </div>
+</section>
   )
 }
